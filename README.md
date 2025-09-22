@@ -15,3 +15,7 @@ gcc hctr_aes.c timing_hctr.c -march=native -O3 (-DUSE_AESNI_1 / -DUSE_AESNI_2 / 
 // compile XCB mode
 gcc xcb_aes.c timing_xcb.c -march=native -O3 (-DUSE_AESNI_1 / -DUSE_AESNI_2 / -DUSE_AESNI_4 / -DUSE_AESNI_8)
 ```
+
+Click here for [the original project](https://github.com/xurz97/TES/tree/main)
+
+These results are published by the author in [Journal of Cryptologic Research](http://www.jcr.cacrnet.org.cn/CN/10.13868/j.cnki.jcr.000789)
