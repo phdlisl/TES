@@ -21,6 +21,12 @@ int ae_init(ae_ctx *ctx, const void *key, int key_len, int nonce_len, int tag_le
 {
     AES_set_encrypt_key(key, 0, (AES_KEY *)ctx->K1);
     AES_set_encrypt_key((unsigned char *)key + 16, 0, (AES_KEY *)ctx->K2);
+    
+    // print and test
+    // char *str="AES KEY 1:";
+    // print_m128i_with_string(str,(__m128i*)ctx->K1);
+    // str="AES KEY 2:";
+    // print_m128i_with_string(str,(__m128i*)ctx->K2);
     return 0;
 }
 
@@ -396,10 +402,12 @@ void XTS_encrypt_8(const unsigned char *pt, int pt_len, const unsigned char *non
 ae_ctx *ae_allocate(void *misc)
 {
     void *p;
-    (void)misc; /* misc unused in this implementation */
+    (void)misc; /* misc unused in this implementation，显式忽略未使用参数 */
 #if USE_MM_MALLOC
+// 使用 Intel 内在函数的分配器
     p = _mm_malloc(sizeof(ae_ctx), 16);
 #elif USE_POSIX_MEMALIGN
+// 使用 POSIX 标准对齐分配
     if (posix_memalign(&p, 16, sizeof(ae_ctx)) != 0)
         p = NULL;
 #else

@@ -1,26 +1,37 @@
+
 // AES template
 #define MAX_KEY_BYTES 16
 #include <wmmintrin.h>
 #include <smmintrin.h>
 typedef unsigned char u8;
 
+/**
+__m128i: 
+a special data type provided by the SSE (Streaming SIMD Extensions) instruction set, 
+used for SIMD (Single Instruction Multiple Data) operations.
+example: 
+typedef long long __m128i __attribute__((__vector_size__(16), __aligned__(16)));
+typedef int __m128i __attribute__ ((__vector_size__ (16)));
+ */
 typedef struct
 {
-    __m128i rd_key[7 + MAX_KEY_BYTES / 4];
+    __m128i rd_key[7 + MAX_KEY_BYTES / 4]; // random key set
 } AES_KEY;
 #define AES_ROUNDS(_key) (10)
 
 static __m128i assist128(__m128i a, __m128i b)
 {
+    // Shift 4 bytes (32 bits) to the left and fill the right with zeros.
     __m128i tmp = _mm_slli_si128(a, 0x04);
+    // a = a ^ tmp
     a = _mm_xor_si128(a, tmp);
     tmp = _mm_slli_si128(tmp, 0x04);
     a = _mm_xor_si128(_mm_xor_si128(a, tmp), _mm_slli_si128(tmp, 0x04));
+    // _mm_shuffle_epi32: fill 128 bits with hightest 32 bits
     return _mm_xor_si128(a, _mm_shuffle_epi32(b, 0xff));
 }
 
-static void AES_set_encrypt_key(const unsigned char *userKey,
-                                const int bits, AES_KEY *key)
+static void AES_set_encrypt_key(const unsigned char *userKey, const int bits, AES_KEY *key)
 {
     __m128i *sched = key->rd_key;
     (void)bits; /* Supress "unused" warning */
@@ -46,8 +57,7 @@ static void AES_NI_set_decrypt_key(__m128i *dkey, const __m128i *ekey)
     dkey[0] = ekey[10];
 }
 
-static inline void AES_encrypt(const unsigned char *in,
-                               unsigned char *out, const AES_KEY *key)
+static inline void AES_encrypt(const unsigned char *in, unsigned char *out, const AES_KEY *key)
 {
     int j;
     const __m128i *sched = ((__m128i *)(key->rd_key));
@@ -59,8 +69,7 @@ static inline void AES_encrypt(const unsigned char *in,
     _mm_store_si128((__m128i *)out, tmp);
 }
 
-static inline void AES_decrypt(const unsigned char *in,
-                               unsigned char *out, const AES_KEY *key)
+static inline void AES_decrypt(const unsigned char *in, unsigned char *out, const AES_KEY *key)
 {
     int j;
     const __m128i *sched = ((__m128i *)(key->rd_key));

@@ -19,3 +19,14 @@ gcc xcb_aes.c timing_xcb.c -march=native -O3 (-DUSE_AESNI_1 / -DUSE_AESNI_2 / -D
 Click here for [the original project](https://github.com/xurz97/TES/tree/main)
 
 These results are published by the author in [Journal of Cryptologic Research](http://www.jcr.cacrnet.org.cn/CN/10.13868/j.cnki.jcr.000789)
+
+### Our testing and improvement
+
+We try to compile the code in local. Use `draw.py` to draw.
+
+```
+// compile XTS mode
+gcc aes_xts.c timing_xts.c -march=native -O3 -DUSE_AESNI_1
+gcc aes_xts.c timing_xts.c -march=native -O3 (-DUSE_AESNI_1 / -DUSE_AESNI_2 / -DUSE_AESNI_4 / -DUSE_AESNI_6 / -DUSE_AESNI_8)
+```
+
